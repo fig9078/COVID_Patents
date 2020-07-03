@@ -1,0 +1,65 @@
+---
+title: "Stat. 694 Project Covid Patent Graph"
+author: "Rajesh Varma"
+date: "2020/07/03"
+output: RMD file
+---
+# In my line of work I deal with patents so wanted to chose a project that had something associated with patents.  I was initally planning to work with the following data, https://github.com/wipo-analytics and https://wipo-analytics.github.io/patent-infographics-with-r.html, but I could not define a specific project that I'm capable of doing and something interesting.  I then researched more on patents and decided to work on the follwoing COVID related patent work. 
+
+# My project goal here was the generate a similar plot as show in the website by using the csv data provided.
+
+# Patent data downloaded from https://about.lens.org/covid-19/ tab Coronavirus: Broad Keywords Based Patents
+
+# Some of the variables had space between the words and I tried using R code to replace it with "_" but was unsuccessfull.  Since it was only a few variables I physically added "_" between the words.
+
+```{r}
+library(pacman)
+p_load(tidyverse)
+```
+
+```{r}
+library(dplyr)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(dplyr)
+```
+
+#to limit the data to specific columns
+```{r}
+library(dplyr)
+publication <- select(Coronavirus_broad_keywords_based_patents, Publication_Year)
+```
+
+#assign a value to our publication field by using sum() and the number 1
+```{r}
+publication_number <- mutate(publication, n = sum(publication = 1))
+```
+
+#calculate how many of our documents were published in each year
+```{r}
+publication_total <- count(publication_number, Publication_Year, wt = n)
+publication_total
+```
+
+# To check if R count is correct we use sum and select the column we want to sum using $
+```{r}
+sum(publication_total$n)
+```
+
+# renaming the character vector publication_year as “pubyear”. This command doesn't require quote marks
+```{r}
+publication_total <- rename(publication_total, Year = Publication_Year, Document_Count = n)%>% 
+  print()
+```
+
+
+# draw a line graph similar the website link https://www.lens.org/lens/search/patent/analysis?collectionId=179940&p=0&n=10#pub_year:line,jurisdiction:map,applicant:logo-grid,type:pie,inventor:bar,owner:logo-grid
+```{r}
+qplot(x = Year , y = Document_Count, data = publication_total, geom = "line")
+```
+
+# The grap shows how the patent works on COVID has evolved over the years.  This kind of plot is not possible to be extracted from USPTO website or any other free patent service websites.  In the past I manually created such chart by going through individual patents and creating a data set, which was much smaller than this data set (<50 observations).  
+
